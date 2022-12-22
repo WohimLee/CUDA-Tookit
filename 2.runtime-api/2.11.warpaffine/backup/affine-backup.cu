@@ -41,22 +41,23 @@ struct AffineMatrix{
 
     void getInvertMatrix(float imat[6], float omat[6]){
         // 原矩阵 imat
-        float i00=imat[0], i01=imat[1], i02=imat[2],
-              i10=imat[3], i11=imat[4], i12=imat[5];
-              //       0 ,          0 ,          1
-        // 原矩阵的行列式 1/D
-        float D = i00*i11 - i01*i10;
+        float i00 = imat[0];  float i01 = imat[1];  float i02 = imat[2];
+        float i10 = imat[3];  float i11 = imat[4];  float i12 = imat[5];
+        //        0 ,                   0 ,                   1
+
+        // 计算行列式
+        float D = i00 * i11 - i01 * i10;
         D = D != 0 ? 1.0 / D : 0;
 
-        // 这里就是 伴随矩阵/D
-        float A00 = i11 * D, A10 = -i10 * D,
-              A01 =-i01 * D, A11 =  i00 * D;
-        float A20 = -A00*i02 - A01 * i12,
-              A21 = -A10*i02 - A11 * i12;
-
-        // 得到的逆矩阵
-        omat[0]=A00, omat[1]=A10, omat[2]=A20,
-        omat[3]=A01, omat[4]=A11, omat[5]=A21;      
+        // 计算剩余的伴随矩阵除以行列式
+        float A11 = i11 * D; // A00
+        float A22 = i00 * D; // A11
+        float A12 = -i01 * D; // A01
+        float A21 = -i10 * D; // A10
+        float b1 = -A11 * i02 - A12 * i12; // A20
+        float b2 = -A21 * i02 - A22 * i12; // A21
+        omat[0] = A11;  omat[1] = A12;  omat[2] = b1;
+        omat[3] = A21;  omat[4] = A22;  omat[5] = b2;
     }
 
     void compute(const GPUData srcGPU, const GPUData dstGPU){
@@ -148,6 +149,7 @@ __global__ void warpaffine_bilinear_kernel(
     dstPoint.data[0] = dstPoint.c0;
     dstPoint.data[1] = dstPoint.c1;
     dstPoint.data[2] = dstPoint.c2;
+    // printf("(%d, %d) c0=%d, c1=%d, c2=%d\n", dstPoint.x, dstPoint.y, dstPoint.c0, dstPoint.c1, dstPoint.c2);
 }
 
 void lauch_kernel(
