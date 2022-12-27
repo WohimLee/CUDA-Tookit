@@ -35,7 +35,7 @@ int main(){
     checkDriver(cuMemAlloc(&device_memory_pointer, 100)); // 注意这是指向device的pointer, 
     printf("device_memory_pointer = %p\n", device_memory_pointer);
 
-    // 输入二级指针向host要一个100 byte的锁页内存，专供设备访问。参考 2.cuMemAllocHost.jpg 讲解视频：https://v.douyin.com/NrYL5KB/
+    // 输入二级指针向host要一个100 byte的锁页内存，专供设备访问。
     float* host_page_locked_memory = nullptr;
     checkDriver(cuMemAllocHost((void**)&host_page_locked_memory, 100));
     printf("host_page_locked_memory = %p\n", host_page_locked_memory);

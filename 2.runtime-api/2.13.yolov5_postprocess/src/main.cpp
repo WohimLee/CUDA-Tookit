@@ -34,7 +34,7 @@ static std::vector<uint8_t> load_file(const string& file){
     if (length > 0){
         in.seekg(0, ios::beg);
         data.resize(length);
-
+        
         in.read((char*)&data[0], length);
     }
     in.close();
